@@ -116,9 +116,9 @@ const sound = new SoundEngine();
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 400;
 const FLOOR_Y = 320;
-const GRAVITY = 0.65;
-const BASE_SPEED = 5.0;
-const MAX_SPEED = 10.5;
+const GRAVITY = 0.76; // Snappier fall
+const BASE_SPEED = 6.2; // Faster starting speed
+const MAX_SPEED = 15.5; // Much higher top speed
 
 // --- STATE MANAGEMENT ---
 let gameState = 'START'; // START, PLAYING, PAUSED, GAMEOVER
@@ -161,7 +161,7 @@ class Cat {
     this.x = 110;
     this.y = FLOOR_Y - this.height;
     this.vy = 0;
-    this.jumpForce = -12.5;
+    this.jumpForce = -13.8; // Snappier, higher jump to match gravity & speed
     
     // States: 'running', 'jumping', 'diving', 'sliding', 'dead'
     this.state = 'running';
@@ -1155,8 +1155,8 @@ function updatePhysics(dtMultiplier) {
   score = Math.floor(distanceRan);
   currentScoreEl.textContent = String(score).padStart(5, '0');
 
-  // Gradual speed scaling
-  gameSpeed = BASE_SPEED + Math.min(MAX_SPEED - BASE_SPEED, score * 0.005);
+  // Gradual speed scaling - faster acceleration curve (score * 0.0085)
+  gameSpeed = BASE_SPEED + Math.min(MAX_SPEED - BASE_SPEED, score * 0.0085);
 
   // Update Cat Physics
   player.update(dtMultiplier);
@@ -1174,8 +1174,8 @@ function updatePhysics(dtMultiplier) {
 
   // Spawn and Update Obstacles
   obstacleSpawnTimer += dtMultiplier;
-  // Spawn obstacles at variable intervals that decrease slightly with speed
-  const spawnThreshold = Math.max(75, 130 - gameSpeed * 4);
+  // Spawn obstacles at variable intervals that decrease with speed, allowing tighter patterns
+  const spawnThreshold = Math.max(42, 120 - gameSpeed * 5.2);
   if (obstacleSpawnTimer >= spawnThreshold) {
     if (Math.random() < 0.7) { // 70% chance of spawning
       spawnObstacle();
