@@ -1,0 +1,464 @@
+/* Modern CSS reset and typography initialization */
+:root {
+  --bg-deep: #0b0c16;
+  --panel-glass: rgba(18, 20, 38, 0.65);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-glow: rgba(139, 92, 246, 0.15);
+  
+  --color-primary: #a78bfa;     /* Pastel Purple */
+  --color-secondary: #f472b6;   /* Cute Pink */
+  --color-yellow: #fbbf24;      /* Soft Gold */
+  --color-white: #f8fafc;
+  --color-muted: #94a3b8;
+  
+  --font-retro: 'Press Start 2P', monospace;
+  --font-ui: 'Outfit', sans-serif;
+  
+  --shadow-neon: 0 0 20px rgba(167, 139, 250, 0.35);
+  --shadow-neon-secondary: 0 0 20px rgba(244, 114, 182, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; /* Disables standard double-tap zoom & scroll on mobile */
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--color-white);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 10px;
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
+/* Outer layout wrapper */
+#game-wrapper {
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Central game container that matches the aspect ratio of the Canvas */
+#game-container {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  position: relative;
+  background-color: #0d0e1b;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8),
+              0 0 30px rgba(139, 92, 246, 0.1);
+  border: 1px solid var(--panel-border);
+}
+
+/* Canvas stretching inside the container */
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* HUD Glassmorphism Layout */
+#hud {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none; /* Let clicks pass through to game canvas */
+  z-index: 10;
+}
+
+.ui-panel {
+  background: var(--panel-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: var(--panel-glow);
+  display: flex;
+  gap: 24px;
+}
+
+.score-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.score-label {
+  font-family: var(--font-retro);
+  font-size: 8px;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 6px rgba(167, 139, 250, 0.4);
+}
+
+.score-value {
+  font-family: var(--font-retro);
+  font-size: 16px;
+  color: var(--color-white);
+  letter-spacing: 1px;
+}
+
+/* Sound and Pause Buttons container in HUD */
+.hud-buttons {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto; /* Active pointer events for buttons */
+}
+
+.hud-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--color-white);
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hud-btn:hover {
+  background: rgba(167, 139, 250, 0.15);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+  transform: translateY(-1px);
+}
+
+.hud-btn:active {
+  transform: translateY(1px);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.15s ease;
+}
+
+/* Glassmorphism Overlays for Screens */
+.screen-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(7, 8, 15, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 20px;
+}
+
+.screen-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.glass-card {
+  background: rgba(15, 17, 34, 0.8);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 30px 40px;
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
+              0 0 40px rgba(139, 92, 246, 0.08);
+}
+
+.glass-card.small {
+  max-width: 320px;
+  padding: 24px;
+}
+
+/* Logo and text styling */
+.logo-area {
+  margin-bottom: 24px;
+}
+
+.cat-logo-svg {
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.25));
+  animation: logo-bounce 3s infinite ease-in-out;
+}
+
+@keyframes logo-bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+.game-title {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 2.2rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--color-white) 30%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.game-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  text-shadow: 0 0 8px rgba(244, 114, 182, 0.25);
+}
+
+/* Buttons style */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #8b5cf6 100%);
+  border: none;
+  color: var(--color-white);
+  padding: 14px 36px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow-neon);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  max-width: 240px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 55%
+  );
+  transform: rotate(45deg);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(167, 139, 250, 0.5),
+              0 0 4px rgba(255, 255, 255, 0.2) inset;
+}
+
+.btn-primary:hover::after {
+  transform: translate(50%, 50%) rotate(45deg);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Controls Guide styling */
+.controls-guide {
+  width: 100%;
+  border-top: 1px solid var(--panel-border);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guide-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.keys {
+  display: flex;
+  gap: 6px;
+}
+
+.key {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-family: var(--font-retro);
+  font-size: 7px;
+  color: var(--color-white);
+  min-width: 24px;
+  text-align: center;
+}
+
+.guide-text {
+  color: var(--color-muted);
+}
+
+/* Mobile specific styling */
+.touch-icon {
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Pause screen elements */
+.screen-title {
+  font-weight: 800;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.screen-subtitle {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+/* Gameover Screen design */
+.gameover-title {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 2.4rem;
+  background: linear-gradient(135deg, #ff9494 0%, var(--color-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 20px rgba(244, 114, 182, 0.2);
+}
+
+.gameover-quote {
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--color-muted);
+  margin-bottom: 24px;
+}
+
+.results-container {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  border: 1px solid var(--panel-border);
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: var(--color-muted);
+}
+
+.result-row:not(:last-child) {
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding-bottom: 8px;
+}
+
+.result-val {
+  font-family: var(--font-retro);
+  font-size: 12px;
+  color: var(--color-white);
+}
+
+.result-val.highlight {
+  color: var(--color-yellow);
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+/* Media query to adapt HUD and keys based on user device */
+@media (hover: hover) {
+  /* Show Desktop controls on screens that support hover (desktop mouse) */
+  .guide-item.mobile {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  /* Show Mobile controls on screens that do not support hover (touch screens) */
+  .guide-item.desktop {
+    display: none;
+  }
+  
+  .glass-card {
+    padding: 24px 28px;
+  }
+  
+  .game-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Keep aspect ratio scaling safe on small screens */
+@media (max-width: 480px) {
+  #game-container {
+    border-radius: 12px;
+  }
+  
+  .score-value {
+    font-size: 12px;
+  }
+  
+  .score-label {
+    font-size: 6px;
+  }
+  
+  .ui-panel {
+    padding: 6px 12px;
+    gap: 12px;
+  }
+  
+  .hud-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
